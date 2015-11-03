@@ -125,11 +125,18 @@ function EasyStateMachine(aStates) {
                     };
             leavePath.splice(0, lMax);
             entryPath.splice(0, eMax);
-
-            leavePath.forEach(function(state) {
-                if (state.exit)
-                    state.exit();
-            });
+            
+//            leavePath.forEach(function(state) {
+//                if (state.entry)
+//                    state.entry();
+//            });
+            
+            var lpMax = leavePath.length - 1;
+            for (var j=lpMax;j >= 0; j--) {
+                if (leavePath[j].exit)
+                    leavePath[j].exit();
+            }
+            
             entryPath.forEach(function(state) {
                 if (state.entry)
                     state.entry();

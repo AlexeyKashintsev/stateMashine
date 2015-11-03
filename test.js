@@ -74,6 +74,7 @@ test('statemashine', function () {
     }() === 'oInitss1Initss1Entry', 'Adding dynamic states and moving to a new state');
     
     ok(function() {
+        to = '';
         sm.states.ss1.exit = function() {
             to += 'ss1Exit';
         }
