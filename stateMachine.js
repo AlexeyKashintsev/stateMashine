@@ -57,7 +57,6 @@ function EasyStateMachine(aStates) {
         state.parent = nState(aParent);
         
         state.addChild = function(childState) {
-            childState.__proto__ = state;
             state.childs.push(childState);
         };
         state.deleteChild = function(childState) {
@@ -94,7 +93,9 @@ function EasyStateMachine(aStates) {
         var parent = aStateParent ? 
                         (typeof aStateParent === 'object' ? aStateParent : states[aStateParent])
                         : null;
-        states[aStateName] = new State(aStateName, parent, EnterAction, ExitAction, InitAction);
+        var e = State;
+        e.prototype = parent;
+        states[aStateName] = new e(aStateName, parent, EnterAction, ExitAction, InitAction);
 //        if (parent)
 //            parent.addChild(states[aStateName]);
         return states[aStateName];

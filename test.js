@@ -124,4 +124,11 @@ test('statemashine', function () {
         console.log('Properties data: prop_ss2 = ' + sm.state.prop_ss2 + ', prop_op = ' + sm.state.prop_op + ', st2_op = ' + sm.state.st2_op + ', state2_op = ' + sm.state.state2_op);
         return sm.state.state2_op;
     }() === 'test2', 'Testing  prototype properties 3: dynamic property add');
+    
+    ok(function() {
+        sm.state.state2_op = 'test2_changed'; 
+        sm.state = 'state2';
+        console.log('Properties data: prop_ss2 = ' + sm.state.prop_ss2 + ', prop_op = ' + sm.state.prop_op + ', st2_op = ' + sm.state.st2_op + ', state2_op = ' + sm.state.state2_op);
+        return sm.state.state2_op;
+    }() !== 'test2_changed', 'Testing  prototype properties 4: dynamic property change');
 });
