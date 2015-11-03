@@ -100,4 +100,28 @@ test('statemashine', function () {
         
         return p.to;
     }() === to, 'Going to state with specified params by sm.setState command');
+    ok(function() {
+        sm.states.ss2.prop_ss2 = 12;
+        sm.states.operational.prop_op = 14;
+        sm.states.state2.st2_op = 'test';
+        
+        sm.state = 'ss2';
+        console.log('Properties data: prop_ss2 = ' + sm.state.prop_ss2 + ', prop_op = ' + sm.state.prop_op + ', st2_op = ' + sm.state.st2_op);
+        
+        return sm.state.st2_op;
+    }() === 'test', 'Testing  prototype properties');
+    
+    ok(!function() {
+        sm.state = 'state2';
+        console.log('Properties data: prop_ss2 = ' + sm.state.prop_ss2 + ', prop_op = ' + sm.state.prop_op + ', st2_op = ' + sm.state.st2_op);
+        
+        return sm.state.prop_ss2;
+    }(), 'Testing  prototype properties 2');
+    
+    ok(function() {
+        sm.state.state2_op = 'test2'; 
+        sm.state = 'ss2';
+        console.log('Properties data: prop_ss2 = ' + sm.state.prop_ss2 + ', prop_op = ' + sm.state.prop_op + ', st2_op = ' + sm.state.st2_op + ', state2_op = ' + sm.state.state2_op);
+        return sm.state.state2_op;
+    }() === 'test2', 'Testing  prototype properties 3: dynamic property add');
 });

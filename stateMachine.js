@@ -57,6 +57,7 @@ function EasyStateMachine(aStates) {
         state.parent = nState(aParent);
         
         state.addChild = function(childState) {
+            childState.__proto__ = state;
             state.childs.push(childState);
         };
         state.deleteChild = function(childState) {
