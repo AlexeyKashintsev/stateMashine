@@ -1,3 +1,6 @@
+/**
+ * @author Alexey Kashintsev
+ */
 (function () {
     function EasyStateMachine(aStates) {
         var sm = this;
@@ -198,6 +201,9 @@
     if (typeof define == 'function' && typeof define.amd == 'object' && define.amd) {
 
 		// AMD. Register as an anonymous module.
+                /**
+                 * @module EasyStateMachine
+                 */
 		define(function() {
 			return EasyStateMachine;
 		});
