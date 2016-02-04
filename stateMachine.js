@@ -29,21 +29,33 @@
             Object.defineProperty(state, "entry", {
                 get: function() { return entry; },
                 set: function(aFunct) { entry = aFunct ? function() {
-                        if (!inititalized && init)
-                            init();
-                        aFunct(state.eParams ? state.eParams : null);
-                        state.eParams = null;
+                        function entry() {
+                            aFunct(state.eParams ? state.eParams : null);
+                            state.eParams = null;
+                        }
+                        if (!inititalized && init) {
+                            if (!init.async) {
+                                init();
+                                entry();
+                            } else {
+                                init(entry);
+                            }
+                        } else
+                            entry();
+                        
                     } : init;
                 }
             });
             Object.defineProperty(state, "init", {
                 get: function() { return init; },
-                set: function(aFunct) { init = aFunct ? function() {
+                set: function(aFunct) { init = aFunct ? function(aCallback) {
                         inititalized = true;
-                        aFunct(state.iParams ? state.iParams : null);
+                        aFunct(state.iParams ? state.iParams : null, init.async ? aCallback : null);
+//                        if (!aFunct.async)
+//                            aCallback();
                     } : null;
                     if (!entry)
-                        entry = init;
+                        entry = init; //Вот это под вопросом! Хотя и ломает тесты
                 }
             });
             Object.defineProperty(state, "exit", {

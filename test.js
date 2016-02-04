@@ -19,7 +19,7 @@ states.state1.exit = function () {
 }
 
 
-test('statemashine', function () {
+test('statemashine basic steps', function () {
     ok(function () {
         sm = new EasyStateMachine(states);
         return typeof sm;
@@ -100,6 +100,30 @@ test('statemashine', function () {
 
         return p.to;
     }() === to, 'Going to state with specified params by sm.setState command');
+    
+    ok(function () {
+        var prevState = sm.state;
+        sm.state = 'undefined_state';
+        console.log('Current state is ' + sm.state.name);
+        return prevState;
+    }() === sm.state, 'Testing for go to undefined state');
+    
+    ok(!!function () {
+        sm.loadStates("state6", {substates: {
+                state6Do: {}
+            },
+            doIt: true
+        }, 'init');
+
+        sm.state = 'state6Do';
+
+        console.log(to);
+
+        return true;
+    }(), 'Moving to a new dynamic state without init and entry functions');
+    
+});
+test('Testing prototype properties', function() {
     ok(function () {
         sm.states.ss2.prop_ss2 = 12;
         sm.states.operational.prop_op = 14;
@@ -131,14 +155,10 @@ test('statemashine', function () {
         console.log('Properties data: prop_ss2 = ' + sm.state.prop_ss2 + ', prop_op = ' + sm.state.prop_op + ', st2_op = ' + sm.state.st2_op + ', state2_op = ' + sm.state.state2_op);
         return sm.state.state2_op;
     }() !== 'test2_changed', 'Testing  prototype properties 4: dynamic property change');
-
-    ok(function () {
-        var prevState = sm.state;
-        sm.state = 'undefined_state';
-        console.log('Current state is ' + sm.state.name);
-        return prevState;
-    }() === sm.state, 'Testing for go to undefined state');
-
+});
+test('Testing statePreProcessor and async calls', function(assert) {
+    sm = new EasyStateMachine(states);
+    
     ok(function () {
         to = '';
 
@@ -170,7 +190,7 @@ test('statemashine', function () {
         console.log(to);
 
         return to;
-    }() === 's2Exit - state3init - state3entry - stateDoinit - stateDoentry - stateDoexit - stateNotDoentry'
+    }() === ' - state3init - state3entry - stateDoinit - stateDoentry - stateDoexit - stateNotDoentry'
             , 'Testing dynamic state add with synchronous statePreProcessor');
             
     ok(function () {
@@ -206,4 +226,109 @@ test('statemashine', function () {
         return to;
     }() === ' - stateNotDoexit - state3exit - state4init - state4entry - state4Doinit - state4Doentry - state4Doexit - state4NotDoentry'
             , 'Testing dynamic state add with Asynchronous statePreProcessor');
+    
+    var done1 = assert.async();
+    var done2 = assert.async();
+    var tst1 = "";
+    var tst2 = "";
+    sm.loadStates("state6", {}, 'init');
+    
+    sm.states.state6.init = function(params, aCallback) {
+        setTimeout(function() {
+            tst1 += "init";
+            if (aCallback)
+                aCallback();
+        }, 1500);
+    };
+    
+    sm.states.state6.init.async = true;
+    
+    sm.states.state6.entry = function() {
+            tst1 += "entry";
+            assert.equal(tst1, 'initentry', 'Testing for async init for one state');
+            sm.state = 'state7';
+            done1();
+    };
+    
+    sm.state = 'state6';
+    
+    sm.loadStates("state7", {
+        substates: {
+            state7_1: {
+                substates: {
+                    state7_1_1: {}
+                }
+            }
+        }
+    }, 'init');
+    
+    sm.states.state7.init = function(params, aCallback) {
+        setTimeout(function() {
+            tst2 += "state7init";
+            if (aCallback)
+                aCallback();
+        }, 2500);
+    };    
+    sm.states.state6.init.async = true;
+    
+    sm.states.state7.init = function(params, aCallback) {
+        setTimeout(function() {
+            tst2 += "state7init";
+            if (aCallback)
+                aCallback();
+        }, 2500);
+    };
+    
+    sm.states.state7.entry = function() {
+            tst2 += "state7entry";
+    };
+    
+    sm.states.state7_1.init = function(params, aCallback) {
+        setTimeout(function() {
+            tst2 += "state7_1init";
+            if (aCallback)
+                aCallback();
+        }, 1500);
+    };
+    
+    sm.states.state7_1.entry = function() {
+            tst2 += "state7_1entry";
+    };
+    
+    sm.states.state7_1_1.init = function(params, aCallback) {
+        setTimeout(function() {
+            tst2 += "state7_1_1init";
+            if (aCallback)
+                aCallback();
+        }, 500);
+    };
+    
+    sm.states.state7_1.entry = function() {
+            tst2 += "state7_1_1entry";
+            console.log(tst2);
+            assert.equal(tst2, 'state7initstate7entrystate7_1initstate7_1entrystate7_1_1init'
+                        , 'Testing for async init for multiple states');
+            done1();
+            
+    };
+    sm.states.state7.init.async =
+            sm.states.state7_1.init.async =
+            sm.states.state7_1_1.init.async = true;
+    
+    sm.state = 'state6';
+    
+    
+    
+//    setTimeout(function() {
+//        
+//    }, 1500)
+//    test( "async init", function (assert) {
+//
+//        sm.state = 'state6Do';
+//
+//        console.log(to);
+//
+//        done1();
+//    });//, 'Moving to a new dynamic state without init and entry functions');   
+    
 });
