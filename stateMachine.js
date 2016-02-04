@@ -110,6 +110,11 @@
         var stateQueue = [];
         function setState(aNewState, eParams) {
             var state = nState(aNewState);
+	    if (!state) {
+		console.log('Error! The state is not defined! State: ' + aNewState);
+		return false;
+	    }
+	    
             prevState = currentState;
             if (eParams) {
                 state.eParams = eParams;
@@ -154,6 +159,7 @@
                 stateChange = false;
                 processQueue();
             }
+	    return true;
         };
 
         function processQueue() {

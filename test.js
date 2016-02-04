@@ -131,4 +131,11 @@ test('statemashine', function () {
         console.log('Properties data: prop_ss2 = ' + sm.state.prop_ss2 + ', prop_op = ' + sm.state.prop_op + ', st2_op = ' + sm.state.st2_op + ', state2_op = ' + sm.state.state2_op);
         return sm.state.state2_op;
     }() !== 'test2_changed', 'Testing  prototype properties 4: dynamic property change');
+	
+	ok(function() {
+		var prevState = sm.state;
+        sm.state = 'undefined_state';
+        console.log('Current state is ' + sm.state);
+        return prevState;
+    }() === sm.state, 'Testing for go to undefined state');
 });
