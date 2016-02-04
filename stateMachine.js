@@ -8,13 +8,13 @@
         sm.states = states;
         var currentState, prevState;
         var history = [];
-	var statePreProcessor = aStatePreProcessor ? aStatePreProcessor : null;
-	
-	/**
-	 * @param aState - экземпляр состояния или название состояния
-	 * @returns Если на вход дано состояние, то возвращает его, а если название состояния,
-	 * то если оно существует - возвращает состояние, иначе undefined
-	 */
+        var statePreProcessor = aStatePreProcessor ? aStatePreProcessor : null;
+
+        /**
+         * @param aState - экземпляр состояния или название состояния
+         * @returns Если на вход дано состояние, то возвращает его, а если название состояния,
+         * то если оно существует - возвращает состояние, иначе undefined
+         */
         function nState(aState) {
             return typeof aState === 'object' ? aState : states[aState];
         }
@@ -27,8 +27,11 @@
             this.childs = [];
 
             Object.defineProperty(state, "entry", {
-                get: function() { return entry; },
-                set: function(aFunct) { entry = aFunct ? function() {
+                get: function () {
+                    return entry;
+                },
+                set: function (aFunct) {
+                    entry = aFunct ? function () {
                         function entry() {
                             aFunct(state.eParams ? state.eParams : null);
                             state.eParams = null;
@@ -42,13 +45,16 @@
                             }
                         } else
                             entry();
-                        
+
                     } : init;
                 }
             });
             Object.defineProperty(state, "init", {
-                get: function() { return init; },
-                set: function(aFunct) { init = aFunct ? function(aCallback) {
+                get: function () {
+                    return init;
+                },
+                set: function (aFunct) {
+                    init = aFunct ? function (aCallback) {
                         inititalized = true;
                         aFunct(state.iParams ? state.iParams : null, init.async ? aCallback : null);
 //                        if (!aFunct.async)
@@ -59,12 +65,18 @@
                 }
             });
             Object.defineProperty(state, "exit", {
-                get: function() { return exit; },
-                set: function(aFunct) { exit = aFunct; }
+                get: function () {
+                    return exit;
+                },
+                set: function (aFunct) {
+                    exit = aFunct;
+                }
             });
             Object.defineProperty(state, "parent", {
-                get: function() { return parent; },
-                set: function(aParent) {
+                get: function () {
+                    return parent;
+                },
+                set: function (aParent) {
                     if (parent)
                         parent.deleteChild(state);
                     parent = aParent;
@@ -78,25 +90,25 @@
             state.init = anInit;
             state.parent = nState(aParent);
 
-            state.addChild = function(childState) {
+            state.addChild = function (childState) {
                 state.childs.push(childState);
             };
-            state.deleteChild = function(childState) {
-    //            TODO
+            state.deleteChild = function (childState) {
+                //            TODO
             };
 
-            state.hasState = function(aState) {
+            state.hasState = function (aState) {
                 aState = nState(aState);
                 var path = state.getPath();
                 var res = false;
-                path.forEach(function(state) {
+                path.forEach(function (state) {
                     if (state === aState)
                         res = true;
                 });
                 return res;
             };
 
-            state.getPath = function() {
+            state.getPath = function () {
                 if (!state.parent)
                     return [this];
                 else {
@@ -106,20 +118,20 @@
                 }
             };
 
-            state.activate = function() {
+            state.activate = function () {
                 sm.setState(state);
             };
         };
 
         function addState(aStateName, aStateParent, EnterAction, ExitAction, InitAction) {
-            var parent = aStateParent ? 
-                            (typeof aStateParent === 'object' ? aStateParent : states[aStateParent])
-                            : null;
+            var parent = aStateParent ?
+                    (typeof aStateParent === 'object' ? aStateParent : states[aStateParent])
+                    : null;
             var e = State;
             e.prototype = parent;
             states[aStateName] = new e(aStateName, parent, EnterAction, ExitAction, InitAction);
-    //        if (parent)
-    //            parent.addChild(states[aStateName]);
+            //        if (parent)
+            //            parent.addChild(states[aStateName]);
             return states[aStateName];
         };
 
@@ -128,11 +140,11 @@
         var stateQueue = [];
         function setState(aNewState, eParams) {
             var state = nState(aNewState);
-	    if (!state) {
-		console.log('Error! The state is not defined! State: ' + aNewState);
-		return false;
-	    }
-	    
+            if (!state) {
+                console.log('Error! The state is not defined! State: ' + aNewState);
+                return false;
+            }
+
             prevState = currentState;
             if (eParams) {
                 state.eParams = eParams;
@@ -151,22 +163,23 @@
                         if (leavePath[j] === entryPath[i]) {
                             lMax = +j + 1;
                             eMax = +i + 1;
-                        };
+                        }
+                ;
                 leavePath.splice(0, lMax);
                 entryPath.splice(0, eMax);
 
-    //            leavePath.forEach(function(state) {
-    //                if (state.entry)
-    //                    state.entry();
-    //            });
+                //            leavePath.forEach(function(state) {
+                //                if (state.entry)
+                //                    state.entry();
+                //            });
 
                 var lpMax = leavePath.length - 1;
-                for (var j=lpMax;j >= 0; j--) {
+                for (var j = lpMax; j >= 0; j--) {
                     if (leavePath[j].exit)
                         leavePath[j].exit();
                 }
 
-                entryPath.forEach(function(state) {
+                entryPath.forEach(function (state) {
                     if (state.entry)
                         state.entry();
                     currentState = state;
@@ -177,7 +190,7 @@
                 stateChange = false;
                 processQueue();
             }
-	    return true;
+            return true;
         };
 
         function processQueue() {
@@ -195,56 +208,56 @@
          */
         function createStates(aState, aSubstatesAr, aParentState, aPreProcessor) {
             function createState(aSubstates) {
-		var sState = eSt ? eSt : addState(aState, aParentState, aSubstates.entry, aSubstates.exit, aSubstates.init);
-		for (var j in aSubstates.substates)
-		    createStates(j, aSubstates.substates[j], sState, aPreProcessor);
-	    }
-	    
-	    var eSt = nState(aState);
-	    if (!eSt && (statePreProcessor || aPreProcessor)) {
+                var sState = eSt ? eSt : addState(aState, aParentState, aSubstates.entry, aSubstates.exit, aSubstates.init);
+                for (var j in aSubstates.substates)
+                    createStates(j, aSubstates.substates[j], sState, aPreProcessor);
+            }
+
+            var eSt = nState(aState);
+            if (!eSt && (statePreProcessor || aPreProcessor)) {
                 var res = (aPreProcessor ? aPreProcessor : statePreProcessor)(aState, aSubstatesAr, createState);
-		if (res)
+                if (res)
                     createState(res);
-	    } else {
-		createState(aSubstatesAr);
-	    }
+            } else {
+                createState(aSubstatesAr);
+            }
         }
 
         if (aStates)
             createStates("init", {substates: aStates});
 
         Object.defineProperty(sm, 'state', {
-            get: function() {
+            get: function () {
                 return currentState;
             },
             set: setState
         });
 
         sm.addState = addState;
-        sm.setState = setState;    
+        sm.setState = setState;
         sm.loadStates = createStates;
-        sm.goBack = function() {
+        sm.goBack = function () {
             sm.setState(prevState);
         };
     }
-    
-    EasyStateMachine.attach = function(aStates) {
+
+    EasyStateMachine.attach = function (aStates) {
         return new EasyStateMachine(aStates);
     };
-    
+
     if (typeof define == 'function' && typeof define.amd == 'object' && define.amd) {
 
-		// AMD. Register as an anonymous module.
-                /**
-                 * @module EasyStateMachine
-                 */
-		define(function() {
-			return EasyStateMachine;
-		});
-	} else if (typeof module !== 'undefined' && module.exports) {
-		module.exports = EasyStateMachine.attach;
-		module.exports.EasyStateMachine = EasyStateMachine;
-	} else {
-		window.EasyStateMachine = EasyStateMachine;
-	}
+        // AMD. Register as an anonymous module.
+        /**
+         * @module EasyStateMachine
+         */
+        define(function () {
+            return EasyStateMachine;
+        });
+    } else if (typeof module !== 'undefined' && module.exports) {
+        module.exports = EasyStateMachine.attach;
+        module.exports.EasyStateMachine = EasyStateMachine;
+    } else {
+        window.EasyStateMachine = EasyStateMachine;
+    }
 })();
