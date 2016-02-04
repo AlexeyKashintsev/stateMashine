@@ -2,13 +2,19 @@
  * @author Alexey Kashintsev
  */
 (function () {
-    function EasyStateMachine(aStates) {
+    function EasyStateMachine(aStates, aStatePreProcessor) {
         var sm = this;
         var states = {};
         sm.states = states;
         var currentState, prevState;
         var history = [];
-
+	var statePreProcessor = aStatePreProcessor ? aStatePreProcessor : null;
+	
+	/**
+	 * @param aState - экземпляр состояния или название состояния
+	 * @returns Если на вход дано состояние, то возвращает его, а если название состояния,
+	 * то если оно существует - возвращает состояние, иначе undefined
+	 */
         function nState(aState) {
             return typeof aState === 'object' ? aState : states[aState];
         }
@@ -175,11 +181,21 @@
          * @param {type} aParentState - родительское состояние
          * @returns {undefined}
          */
-        function createStates(aState, aSubstatesAr, aParentState) {
-            var eSt = nState(aState);
-            var sState = eSt ? eSt : addState(aState, aParentState, aSubstatesAr.entry, aSubstatesAr.exit, aSubstatesAr.init);
-            for (var j in aSubstatesAr.substates)
-                createStates(j, aSubstatesAr.substates[j], sState);
+        function createStates(aState, aSubstatesAr, aParentState, aPreProcessor) {
+            function createState(aSubstates) {
+		var sState = eSt ? eSt : addState(aState, aParentState, aSubstates.entry, aSubstates.exit, aSubstates.init);
+		for (var j in aSubstates.substates)
+		    createStates(j, aSubstates.substates[j], sState, aPreProcessor);
+	    }
+	    
+	    var eSt = nState(aState);
+	    if (!eSt && (statePreProcessor || aPreProcessor)) {
+                var res = (aPreProcessor ? aPreProcessor : statePreProcessor)(aState, aSubstatesAr, createState);
+		if (res)
+                    createState(res);
+	    } else {
+		createState(aSubstatesAr);
+	    }
         }
 
         if (aStates)
