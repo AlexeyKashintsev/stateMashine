@@ -57,8 +57,6 @@
                     init = aFunct ? function (aCallback) {
                         inititalized = true;
                         aFunct(state.iParams ? state.iParams : null, init.async ? aCallback : null);
-//                        if (!aFunct.async)
-//                            aCallback();
                     } : null;
                     if (!entry)
                         entry = init; //Вот это под вопросом! Хотя и ломает тесты
