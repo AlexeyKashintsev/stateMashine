@@ -1,4 +1,4 @@
-var to, sm, states = {
+var to, states = {
     openup: {},
     state1: {},
     state2: {
@@ -11,8 +11,11 @@ var to, sm, states = {
 states.state1.init = function () {
     to = 's1init';
 }
-states.state1.entry = function () {
+states.state1.entry = function (params) {
     to += 's1entry';
+    if (params) {
+        to = params;
+    }
 }
 states.state1.exit = function () {
     to = 's1exit';
@@ -20,6 +23,7 @@ states.state1.exit = function () {
 
 
 test('statemashine basic steps', function () {
+    var sm;
     ok(function () {
         sm = new EasyStateMachine(states);
         return typeof sm;
@@ -122,9 +126,26 @@ test('statemashine basic steps', function () {
         return true;
     }(), 'Moving to a new dynamic state without init and entry functions');
     
+    ok(function() {
+        sm.setState('state1', 'check');
+        console.log(to);
+        return to;
+    }() === 'check', 'Moving to a state with defined entry params in function params');
+    
 });
 test('Testing prototype properties', function() {
-    ok(function () {
+    var sm = new EasyStateMachine(states);
+    sm.loadStates('init', {
+        substates: {
+            operational: {},
+            state2: {
+                substates: {
+                    ss2: {}
+                }
+            }
+        }});
+    
+    ok(function () {       
         sm.states.ss2.prop_ss2 = 12;
         sm.states.operational.prop_op = 14;
         sm.states.state2.st2_op = 'test';

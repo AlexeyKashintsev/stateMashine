@@ -31,9 +31,10 @@
                     return entry;
                 },
                 set: function (aFunct) {
-                    entry = aFunct ? function () {
+                    entry = aFunct ? function (params) {
+                        var p = params ? params : (state.eParams ? state.eParams : null);
                         function entry() {
-                            aFunct(state.eParams ? state.eParams : null);
+                            aFunct(p);
                             state.eParams = null;
                         }
                         if (!inititalized && init) {
@@ -166,22 +167,24 @@
                 leavePath.splice(0, lMax);
                 entryPath.splice(0, eMax);
 
-                //            leavePath.forEach(function(state) {
-                //                if (state.entry)
-                //                    state.entry();
-                //            });
-
-                var lpMax = leavePath.length - 1;
-                for (var j = lpMax; j >= 0; j--) {
-                    if (leavePath[j].exit)
-                        leavePath[j].exit();
+                while (leavePath.length) {
+                    var ls = leavePath.pop();
+                    if (ls.exit) {
+                        ls.exit();
+                    }
                 }
-
-                entryPath.forEach(function (state) {
-                    if (state.entry)
-                        state.entry();
-                    currentState = state;
-                });
+                
+                function entry(aState, anEntryStatesAr) {
+                    if (aState.entry)
+                        aState.entry();
+                    currentState = aState;
+                    if (anEntryStatesAr.length) {
+                        entry(anEntryStatesAr.shift(), anEntryStatesAr);
+                    }
+                }
+                if (entryPath.length) {
+                    entry(entryPath.shift(), entryPath);
+                }
 
                 currentState = state;
                 history.push(currentState);
