@@ -131,7 +131,18 @@ test('statemashine basic steps', function () {
         console.log(to);
         return to;
     }() === 'check', 'Moving to a state with defined entry params in function params');
-    
+
+    ok(function() {
+        sm.loadStates('state2', {}, 'state1');
+            sm.setState('state2');
+            sm.setState('state1');
+        return true;
+    }() === true, 'Moving to undefined state and returning to current state');
+
+    ok(function() {
+            sm.setState({});
+            return true;
+        }() === true, 'Moving to a state defined as a wrong objects');
 });
 test('Testing prototype properties', function() {
     var sm = new EasyStateMachine(states);
