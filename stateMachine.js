@@ -14,7 +14,7 @@
          * @param aState - экземпляр состояния или название состояния
          * @returns Если на вход дано состояние, то возвращает его, а если название состояния,
          * то если оно существует - возвращает состояние, иначе undefined
-         */
+         */ 
         function nState(aState) {
             return typeof aState === 'object' ? aState : states[aState];
         }
@@ -252,7 +252,7 @@
         /**
          * @module EasyStateMachine
          */
-        define(function () {
+        define(EasyStateMachine, [], function () {
             return EasyStateMachine;
         });
     } else if (typeof module !== 'undefined' && module.exports) {
