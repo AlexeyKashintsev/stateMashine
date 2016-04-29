@@ -252,7 +252,7 @@
         /**
          * @module EasyStateMachine
          */
-        define(EasyStateMachine, [], function () {
+        define('EasyStateMachine', [], function () {
             return EasyStateMachine;
         });
     } else if (typeof module !== 'undefined' && module.exports) {
