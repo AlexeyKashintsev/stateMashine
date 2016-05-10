@@ -1,0 +1,21 @@
+{
+  "name": "easy-state-machine",
+  "homepage": "https://github.com/AlexeyKashintsev/stateMashine",
+  "authors": [
+    "Alexey Kashintsev <ak@altsoft.biz>"
+  ],
+  "description": "JS state machine",
+  "main": "stateMachine.js",
+  "keywords": [
+    "statemachine"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "app/modules",
+    "test",
+    "tests"
+  ]
+}
