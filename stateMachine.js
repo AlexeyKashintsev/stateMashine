@@ -2,7 +2,7 @@
  * @author Alexey Kashintsev
  */
 (function () {
-    function EasyStateMachine(aStates, aStatePreProcessor) {
+    function EasyStateMachine(aStates, aStatePreProcessor, aLoadWidget) {
         var sm = this;
         var states = {};
         sm.states = states;
@@ -139,6 +139,8 @@
         var stateQueue = [];
         function setState(aNewState, eParams) {
             var state = nState(aNewState);
+            if (aLoadWidget)
+                aLoadWidget.show();
             if (!state) {
                 console.log('Error! The state is not defined! State: ' + aNewState);
                 return false;
@@ -180,6 +182,10 @@
                     currentState = aState;
                     if (anEntryStatesAr.length) {
                         entry(anEntryStatesAr.shift(), anEntryStatesAr);
+                    } else {
+                        debugger
+                        if (aLoadWidget)
+                            aLoadWidget.hide();
                     }
                 }
                 if (entryPath.length) {
