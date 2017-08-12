@@ -183,7 +183,6 @@
                     if (anEntryStatesAr.length) {
                         entry(anEntryStatesAr.shift(), anEntryStatesAr);
                     } else {
-                        debugger
                         if (aLoadWidget)
                             aLoadWidget.hide();
                     }
